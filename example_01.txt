@@ -1,0 +1,3 @@
+RECHERCHER TERMES "gaspillage" DEPUIS "2023-01-01" JUSQU'A "2023-07-18"
+RECUPERER PARTIE ".article-content"
+SAUVEGARDER DANS "conseils_gaspillage.txt"

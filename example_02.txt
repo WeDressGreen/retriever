@@ -1,0 +1,2 @@
+RECHERCHER TERMES "fast fashion" DEPUIS "2022-01-01" JUSQU'A "2022-12-31" MODE "TEXT"
+SAUVEGARDER DANS "conseils_fast_fashion.txt"
