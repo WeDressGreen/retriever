@@ -1,34 +1,69 @@
 import argparse
-# import requests
-# from bs4 import BeautifulSoup
+import requests
+import json
 
 commands = {
     'RECHERCHER': lambda params: search_content(params),
-    'RECUPERER': lambda params: retrieve_content(params),
+    'AFFICHER': lambda params: show_content(),
     'SAUVEGARDER': lambda params: save_content(params)
 }
 
+author = ""
+authorEmail = ""
+writtenAt = ""
 content = ""
 
 def search_content(params):
+    global author
+    global authorEmail
+    global writtenAt
+    global content
+
     search = params['termes']
-    from_dt = params['depuis']
-    to_dt = params["jusqu'a"]
-    mode = params["mode"]
+    from_dt = params['depuis'] if 'depuis' in params else None
+    to_dt = params["jusqu'a"] if "jusqu'a" in params else None
 
-    # Effectuer la search et extraire le content
-    # ...
+    reqParams = { "search": search }
 
-def retrieve_content(params):
-    css_selector = params['partie']
+    if from_dt and to_dt:
+        reqParams["from"] = from_dt
+        reqParams["to"] = to_dt
 
-    # Récupérer le content en utilisant le sélecteur CSS et l'enregistrer dans une variable
-    # ...
+    headers = {'Content-Type': 'application/json'}
+
+    res = requests.post("https://retriever.dynamored.com/search", data=json.dumps(reqParams), headers=headers)
+
+    if res.status_code == 200:
+        resContent = res.json()["data"]
+
+        content = resContent['content']
+        author = resContent['author']
+        authorEmail = resContent['authorEmail']
+        writtenAt = resContent['writtenAt']
+    else:
+        content = "Aucun résultat trouvé"
+
+def show_content():
+    global author
+    global authorEmail
+    global writtenAt
+    global content
+
+    print(author + " <" + authorEmail + ">")
+    print(writtenAt)
+    print(content)
 
 def save_content(params):
+    global author
+    global authorEmail
+    global writtenAt
+    global content
+
     export_file = params['dans']
 
-    with open('./exports/' + export_file, '+wt') as file:
+    with open('./exports/' + export_file, '+wt', encoding="utf-8") as file:
+        file.write(author + " <" + authorEmail + ">\n")
+        file.write(writtenAt + "\n\n")
         file.write(content)
 
 parser = argparse.ArgumentParser(description='Micro-langage pour extraction de content web')
